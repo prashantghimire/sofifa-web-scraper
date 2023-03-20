@@ -2,7 +2,7 @@
 Collected from [sofifa.com](https://sofifa.com) as of March 19, 2023.
 ### Sample Data
 #### Player Basics
-<img src="images/player_basics.png"  alt="Basic"/>
+<img src="images/player_basics.png" width="400px" alt="Basic"/>
 
 #### Player Stats
-<img src="images/player_stats.png"  alt="Stats" />
+<img src="images/player_stats.png" width="400px"  alt="Stats" />
