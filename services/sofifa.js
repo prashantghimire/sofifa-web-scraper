@@ -89,7 +89,7 @@ const getBoxType = (text) => {
 
 const extractData = (type, html) => {
     const $ = cheerio.load(html);
-    const playerStats = ['attacking', 'skill', 'movement', 'power', 'mentality', 'defending', 'goalkeeping', 'traits',];
+    const playerStats = ['attacking', 'skill', 'movement', 'power', 'mentality', 'defending', 'goalkeeping', 'traits'];
     if (type === 'overall_rating') {
         return {overall_rating: $('div span').text()};
     } else if (type === 'potential') {
@@ -113,30 +113,30 @@ const extractData = (type, html) => {
                 const releaseClause = 'release clause';
                 const id = 'id';
                 if (profileListText.startsWith(preferredFoot)) {
-                    profile.preferredFoot = profileListText
+                    profile.profile_preferred_foot = profileListText
                         .replace(preferredFoot, '')
                         .trim();
                 } else if (profileListText.endsWith(weakFoot)) {
-                    profile.weakFoot = parseInt(profileListText.replace(weakFoot, '').trim(),);
+                    profile.profile_weak_foot = parseInt(profileListText.replace(weakFoot, '').trim(),);
                 } else if (profileListText.endsWith(skillMoves)) {
-                    profile.skillMoves = parseInt(profileListText.replace(skillMoves, '').trim(),);
+                    profile.profile_skill_moves = parseInt(profileListText.replace(skillMoves, '').trim(),);
                 } else if (profileListText.endsWith(internationalReputation)) {
-                    profile.internationalReputation = parseInt(profileListText.replace(internationalReputation, '').trim(),);
+                    profile.profile_international_reputation = parseInt(profileListText.replace(internationalReputation, '').trim(),);
                 } else if (profileListText.startsWith(workRate)) {
-                    profile.workRate = profileListText
+                    profile.profile_work_rate = profileListText
                         .replace(workRate, '')
                         .replace(' ', '')
                         .trim();
                 } else if (profileListText.startsWith(bodyType)) {
-                    profile.bodyType = profileListText.replace(bodyType, '').trim();
+                    profile.profile_body_type = profileListText.replace(bodyType, '').trim();
                 } else if (profileListText.startsWith(realFace)) {
-                    profile.realFace = profileListText.replace(realFace, '').trim();
+                    profile.profile_real_face = profileListText.replace(realFace, '').trim();
                 } else if (profileListText.startsWith(releaseClause)) {
-                    profile.releaseClause = profileListText
+                    profile.profile_release_clause = profileListText
                         .replace(releaseClause, '')
                         .trim();
                 } else if (profileListText.startsWith(id)) {
-                    profile.id = profileListText.replace(id, '').trim();
+                    profile.profile_id = profileListText.replace(id, '').trim();
                 }
             })
             .get();
@@ -147,9 +147,9 @@ const extractData = (type, html) => {
             .get();
         return {specialities: specialities.join(',')};
     } else if (type === 'club') {
-        const name = $('.card h5 a').text().trim();
-        const logo = $('.card > img').attr('data-src');
-        const id = parseInt(logo.split('/')[4]);
+        const club_name = $('.card h5 a').text().trim();
+        const club_logo = $('.card > img').attr('data-src');
+        const club_id = parseInt(club_logo.split('/')[4]);
         const other = {};
         $('.card ul li').each((i, el) => {
             const text = $(el).text().toLowerCase();
@@ -158,27 +158,27 @@ const extractData = (type, html) => {
             const joined = 'joined';
             const contractValidUntil = 'contract valid until';
             if (i === 0) {
-                other.rating = text;
+                other.club_rating = text.trim();
             } else if (text.startsWith(position)) {
-                other.position = text.replace(position, '')?.toUpperCase();
+                other.club_position = text.replace(position, '')?.toUpperCase();
             } else if (text.startsWith(kitNumber)) {
-                other.kitNumber = text.replace(kitNumber, '');
+                other.club_kit_number = text.replace(kitNumber, '');
             } else if (text.startsWith(joined)) {
-                other.joined = formatDate(text.replace(joined, ''));
+                other.club_joined = formatDate(text.replace(joined, ''));
             } else if (text.startsWith(contractValidUntil)) {
-                other.contractValidUntil = text
+                other.club_contract_valid_until = text
                     .replace(contractValidUntil, '')
                     .trim();
             }
         });
         return {
-            id, name, logo, ...other,
+            club_id, club_name, club_logo, ...other,
         };
     } else if (type === 'country') {
         const country = {
-            id: $('.card h5 a').attr('href').split('/')[2],
-            name: $('.card h5 a').text().trim(),
-            logo: $('.card > img').attr('data-src'),
+            country_id: $('.card h5 a').attr('href').split('/')[2],
+            country_name: $('.card h5 a').text().trim(),
+            country_logo: $('.card > img').attr('data-src'),
         };
         const other = {};
         $('.card > ul li').each((i, el) => {
@@ -186,11 +186,11 @@ const extractData = (type, html) => {
             const position = 'position';
             const kitNumber = 'kit number';
             if (i === 0) {
-                other.rating = text;
+                other.country_rating = text.trim();
             } else if (text.startsWith(position)) {
-                other.position = text.replace(position, '');
+                other.country_position = text.replace(position, '');
             } else if (text.startsWith(kitNumber)) {
-                other.kitNumber = text.replace(kitNumber, '');
+                other.country_kit_number = text.replace(kitNumber, '');
             }
         });
 
@@ -206,7 +206,7 @@ const extractData = (type, html) => {
         $('.card ul li').each((i, el) => {
             const val = $(el).find('span:first-child').text();
             const attr = $(el).find('span:last-child').text().toLowerCase();
-            const attrKey = _.camelCase(attr);
+            const attrKey = _.snakeCase(attr);
             stats[attrKey] = val;
         });
         return stats;
@@ -220,8 +220,8 @@ const getBasicInfo = (html) => {
     const title = $('title').text();
     const description = $('meta[name=description]').attr('content');
     const name = title.substring(0, title.indexOf('FIFA ') - 1);
-    const fullName = basic.find('.info h1').html();
-    const countryFlag = basic.find('.info .meta a img').attr('data-src');
+    const full_name = basic.find('.info h1').html();
+    const country_flag = basic.find('.info .meta a img').attr('data-src');
     const image = basic.find('img[data-type="player"]').attr('data-src');
     const otherAttrs = basic.find('.info .meta').text().split(' ');
     const weight = parseInt(otherAttrs[otherAttrs.length - 1] || '0');
@@ -236,7 +236,7 @@ const getBasicInfo = (html) => {
     const dob = formatDate(infoMeta.substring(infoMeta.indexOf('(') + 1, infoMeta.indexOf(')')),);
 
     return {
-        name, fullName, countryFlag, description, image, height, weight, positions, dob,
+        name, full_name, country_flag, description, image, height, weight, positions, dob,
     };
 };
 
@@ -251,7 +251,7 @@ const getAllPlayerDetailById = async (playerId) => {
         const date = $($('.bp3-menu').get(2))
             .find('a.bp3-menu-item:nth-child(1)')
             .text();
-        dataMap.versionDate = formatDate(date);
+        dataMap.version_date = formatDate(date);
         const basicInfo = getBasicInfo(html);
         dataMap = {...dataMap, ...basicInfo};
         $('body > .center .grid .col.col-12 .block-quarter').each((index, el) => {
