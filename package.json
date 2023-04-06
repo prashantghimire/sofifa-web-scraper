@@ -1,0 +1,19 @@
+{
+  "name": "fifa-players-data",
+  "version": "1.0.0",
+  "description": "Collected from [sofifa.com](https://sofifa.com) as of March 19, 2023.\r ### Sample Data",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prashantghimire/fifa-players-data.git"
+  },
+  "author": "Prashant Ghimire",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/prashantghimire/fifa-players-data/issues"
+  },
+  "homepage": "https://github.com/prashantghimire/fifa-players-data#readme"
+}
