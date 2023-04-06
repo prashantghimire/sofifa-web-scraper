@@ -11,7 +11,7 @@ const playersIdFilePath = './output/player_list.csv';
 const playerDetailsFilePath = './output/final_data.csv';
 const playerStatsFilePath = './output/final_stats.csv';
 
-const getAllPlayerIds = async (options) => {
+const loadAllPlayerIds = async (options) => {
     fs.writeFileSync(playersIdFilePath, ``);
     let path = `/players?col=oa&sort=desc`;
     while (true) {
@@ -242,6 +242,7 @@ const getBasicInfo = (html) => {
 
 const getAllPlayerDetailById = async (playerId) => {
     try {
+        playerId = playerId.trim();
         const url = `${sofifaBaseUrl}/player/${playerId}/`;
         const html = await readPage(url);
         const $ = cheerio.load(html);
@@ -271,4 +272,4 @@ const getAllPlayerDetailById = async (playerId) => {
     }
 };
 
-module.exports = {getAllPlayerIds, getAllPlayerDetailById};
+module.exports = {loadAllPlayerIds, getAllPlayerDetailById};

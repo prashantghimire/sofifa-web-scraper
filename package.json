@@ -21,6 +21,7 @@
     "cheerio": "^1.0.0-rc.12",
     "csv-reader": "^1.0.11",
     "date-format": "^4.0.14",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "papaparse": "^5.4.1"
   }
 }
