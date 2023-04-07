@@ -23,5 +23,8 @@
     "lodash": "^4.17.21",
     "loglevel": "^1.8.1",
     "papaparse": "^5.4.1"
+  },
+  "devDependencies": {
+    "cli-progress": "^3.12.0"
   }
 }

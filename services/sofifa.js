@@ -10,6 +10,9 @@ const log = require('loglevel');
 const countries = JSON.parse(fs.readFileSync('./data/countries.json').toString());
 const playersIdFilePath = './output/player_ids.csv';
 
+const cliProgress = require('cli-progress');
+const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+
 /**
  * This method will scan the player list page of sofifa and load the file with player ids.
  * @param options
@@ -18,7 +21,10 @@ const playersIdFilePath = './output/player_ids.csv';
 const loadAllPlayerIds = async (options) => {
     fs.writeFileSync(playersIdFilePath, ``);
     let path = `/players?col=oa&sort=desc`;
+    bar.start(310, 0); // approximately 310 pages on sofifa.
+    let count = 0;
     while (true) {
+        bar.update(++count);
         const url = sofifaBaseUrl + path;
         log.info('url=' + url);
         let html;
@@ -43,10 +49,11 @@ const loadAllPlayerIds = async (options) => {
         path = $('div.pagination a:last-child').attr('href');
         const isLastPage = !$('div.pagination a').text().includes('Next');
         if (isLastPage || (options && options.testScan)) {
-            console.log('--- scan complete successfully.---');
+            console.log('\nPlayer ids loaded successfully!\n');
             break;
         }
     }
+    bar.stop();
     return {success: true};
 };
 
