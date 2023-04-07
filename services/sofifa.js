@@ -5,28 +5,32 @@ const {readPage} = require('./crawler');
 const {formatDate} = require('./utils');
 const sofifaBaseUrl = `https://sofifa.com`;
 const _ = require('lodash');
+const log = require('loglevel');
 
 const countries = JSON.parse(fs.readFileSync('./data/countries.json').toString());
-const playersIdFilePath = './output/player_list.csv';
-const playerDetailsFilePath = './output/final_data.csv';
-const playerStatsFilePath = './output/final_stats.csv';
+const playersIdFilePath = './output/player_ids.csv';
 
+/**
+ * This method will scan the player list page of sofifa and load the file with player ids.
+ * @param options
+ * @returns {Promise<{success: boolean}>}
+ */
 const loadAllPlayerIds = async (options) => {
     fs.writeFileSync(playersIdFilePath, ``);
     let path = `/players?col=oa&sort=desc`;
     while (true) {
         const url = sofifaBaseUrl + path;
-        console.log('url = ' + url);
+        log.info('url=' + url);
         let html;
         try {
             html = await readPage(url);
         } catch (e) {
-            console.log('error', e);
+            log.error('read page error', e);
             continue;
         }
         const $ = cheerio.load(html);
-        const table = $('div.card table.table.table-hover.persist-area tbody tr');
-        const players = table
+        const playerListTable = $('div.card table.table.table-hover.persist-area tbody tr');
+        const players = playerListTable
             .map((i, el) => {
                 const link = $(el).find('td.col-name a').attr('href');
                 const parts = link.split('/');
@@ -35,10 +39,10 @@ const loadAllPlayerIds = async (options) => {
             .get();
         const content = players.join('\n') + '\n';
         fs.appendFileSync(playersIdFilePath, content);
+        // update path to scan next page
         path = $('div.pagination a:last-child').attr('href');
         const isLastPage = !$('div.pagination a').text().includes('Next');
-        console.log(path);
-        if (isLastPage || options.testScan) {
+        if (isLastPage || (options && options.testScan)) {
             console.log('--- scan complete successfully.---');
             break;
         }
@@ -46,7 +50,12 @@ const loadAllPlayerIds = async (options) => {
     return {success: true};
 };
 
-const getBoxType = (text) => {
+/**
+ * Helper for getting stats
+ * @param text
+ * @returns {string}
+ */
+const getStatsBoxType = (text) => {
     const countryNames = countries.map((c) => c.Name.toLowerCase());
     if (text.endsWith('overall rating')) {
         return 'overall_rating';
@@ -112,16 +121,15 @@ const extractData = (type, html) => {
                 const realFace = 'real face';
                 const releaseClause = 'release clause';
                 const id = 'id';
+
                 if (profileListText.startsWith(preferredFoot)) {
-                    profile.profile_preferred_foot = profileListText
-                        .replace(preferredFoot, '')
-                        .trim();
+                    profile.profile_preferred_foot = profileListText.replace(preferredFoot, '').trim();
                 } else if (profileListText.endsWith(weakFoot)) {
                     profile.profile_weak_foot = parseInt(profileListText.replace(weakFoot, '').trim(),);
                 } else if (profileListText.endsWith(skillMoves)) {
                     profile.profile_skill_moves = parseInt(profileListText.replace(skillMoves, '').trim(),);
                 } else if (profileListText.endsWith(internationalReputation)) {
-                    profile.profile_international_reputation = parseInt(profileListText.replace(internationalReputation, '').trim(),);
+                    profile.profile_international_reputation = parseInt(profileListText.replace(internationalReputation, '').trim());
                 } else if (profileListText.startsWith(workRate)) {
                     profile.profile_work_rate = profileListText
                         .replace(workRate, '')
@@ -138,8 +146,7 @@ const extractData = (type, html) => {
                 } else if (profileListText.startsWith(id)) {
                     profile.profile_id = profileListText.replace(id, '').trim();
                 }
-            })
-            .get();
+            }).get();
         return profile;
     } else if (type === 'player_specialities') {
         let specialities = $('ul li')
@@ -150,7 +157,7 @@ const extractData = (type, html) => {
         const club_name = $('.card h5 a').text().trim();
         const club_logo = $('.card > img').attr('data-src');
         const club_id = parseInt(club_logo.split('/')[4]);
-        const other = {};
+        const club_others = {};
         $('.card ul li').each((i, el) => {
             const text = $(el).text().toLowerCase();
             const position = 'position';
@@ -158,21 +165,21 @@ const extractData = (type, html) => {
             const joined = 'joined';
             const contractValidUntil = 'contract valid until';
             if (i === 0) {
-                other.club_rating = text.trim();
+                club_others.club_rating = text.trim();
             } else if (text.startsWith(position)) {
-                other.club_position = text.replace(position, '')?.toUpperCase();
+                club_others.club_position = text.replace(position, '')?.toUpperCase();
             } else if (text.startsWith(kitNumber)) {
-                other.club_kit_number = text.replace(kitNumber, '');
+                club_others.club_kit_number = text.replace(kitNumber, '');
             } else if (text.startsWith(joined)) {
-                other.club_joined = formatDate(text.replace(joined, ''));
+                club_others.club_joined = formatDate(text.replace(joined, ''));
             } else if (text.startsWith(contractValidUntil)) {
-                other.club_contract_valid_until = text
+                club_others.club_contract_valid_until = text
                     .replace(contractValidUntil, '')
                     .trim();
             }
         });
         return {
-            club_id, club_name, club_logo, ...other,
+            club_id, club_name, club_logo, ...club_others,
         };
     } else if (type === 'country') {
         const country = {
@@ -180,27 +187,26 @@ const extractData = (type, html) => {
             country_name: $('.card h5 a').text().trim(),
             country_logo: $('.card > img').attr('data-src'),
         };
-        const other = {};
+        const country_other = {};
         $('.card > ul li').each((i, el) => {
             const text = $(el).text().toLowerCase();
             const position = 'position';
             const kitNumber = 'kit number';
             if (i === 0) {
-                other.country_rating = text.trim();
+                country_other.country_rating = text.trim();
             } else if (text.startsWith(position)) {
-                other.country_position = text.replace(position, '');
+                country_other.country_position = text.replace(position, '');
             } else if (text.startsWith(kitNumber)) {
-                other.country_kit_number = text.replace(kitNumber, '');
+                country_other.country_kit_number = text.replace(kitNumber, '');
             }
         });
 
-        return {...country, ...other};
+        return {...country, ...country_other};
     } else if (type === 'traits') {
-        return {
-            'traits': $('.card ul li')
-                .map((i, el) => $(el).find('span:first-child').text())
-                .get().join(',')
-        };
+        let traits = $('.card ul li')
+            .map((i, el) => $(el).find('span:first-child').text())
+            .get().join(',');
+        return {traits};
     } else if (playerStats.includes(type)) {
         const stats = {};
         $('.card ul li').each((i, el) => {
@@ -262,7 +268,7 @@ const getAllPlayerDetailById = async (playerId) => {
                 .text()
                 .toLowerCase()
                 .replace(/(\r\n|\n|\r)/gm, '');
-            const type = getBoxType(text);
+            const type = getStatsBoxType(text);
             let extractData1 = extractData(type, html);
             dataMap = {...dataMap, ...extractData1};
         });
