@@ -8,7 +8,8 @@ const _ = require('lodash');
 const log = require('loglevel');
 
 const countries = JSON.parse(fs.readFileSync('./data/countries.json').toString());
-const playersIdFilePath = './output/player_ids.csv';
+const playersIdsFilePath = './output/player_ids.csv';
+const playersDataFilePath = './output/player_data.csv';
 
 const cliProgress = require('cli-progress');
 const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
@@ -19,9 +20,10 @@ const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
  * @returns {Promise<{success: boolean}>}
  */
 const loadAllPlayerIds = async (options) => {
-    fs.writeFileSync(playersIdFilePath, ``);
+    options = options || {};
+    fs.writeFileSync(playersIdsFilePath, ``);
     let path = `/players?col=oa&sort=desc`;
-    bar.start(310, 0); // approximately 310 pages on sofifa.
+    bar.start(options.testScan ? 1 : 310, 0); // approximately 310 pages on sofifa.
     let count = 0;
     while (true) {
         bar.update(++count);
@@ -44,12 +46,12 @@ const loadAllPlayerIds = async (options) => {
             })
             .get();
         const content = players.join('\n') + '\n';
-        fs.appendFileSync(playersIdFilePath, content);
+        fs.appendFileSync(playersIdsFilePath, content);
         // update path to scan next page
         path = $('div.pagination a:last-child').attr('href');
         const isLastPage = !$('div.pagination a').text().includes('Next');
-        if (isLastPage || (options && options.testScan)) {
-            console.log('\nPlayer ids loaded successfully!\n');
+        if (isLastPage || options.testScan) {
+            log.info('\nPlayer ids loaded successfully!\n');
             break;
         }
     }
@@ -285,4 +287,106 @@ const getAllPlayerDetailById = async (playerId) => {
     }
 };
 
-module.exports = {loadAllPlayerIds, getAllPlayerDetailById};
+const writePlayersData = async () => {
+
+    await loadAllPlayerIds({testScan: false}); // pass {testScan: true} for scanning few players
+
+    let playerIdList = fs.readFileSync(playersIdsFilePath).toString().trim().split('\n');
+    bar.start(playerIdList.length, 0);
+
+    let count = 0;
+    fs.writeFileSync(playersDataFilePath, '');
+    const line = `version,version_date,name,full_name,country_flag,description,image,height,weight,positions,dob,overall_rating,potential,value,wage,profile_preferred_foot,profile_weak_foot,profile_skill_moves,profile_international_reputation,profile_work_rate,profile_body_type,profile_real_face,profile_release_clause,profile_id,specialities,club_id,club_name,club_logo,club_rating,club_position,club_kit_number,club_joined,club_contract_valid_until,country_id,country_name,country_logo,country_rating,country_position,country_kit_number,crossing,finishing,heading_accuracy,short_passing,volleys,dribbling,curve,fk_accuracy,long_passing,ball_control,acceleration,sprint_speed,agility,reactions,balance,shot_power,jumping,stamina,strength,long_shots,aggression,interceptions,positioning,vision,penalties,composure,defensive_awareness,standing_tackle,sliding_tackle,gk_diving,gk_handling,gk_kicking,gk_positioning,gk_reflexes,traits`;
+    fs.appendFileSync(playersDataFilePath, line + '\n', {encoding: 'utf-8'});
+    for await (const playerId of playerIdList) {
+        try {
+            const playerDetails = await getAllPlayerDetailById(playerId);
+            const {
+                version,
+                version_date,
+                name,
+                full_name,
+                country_flag,
+                description,
+                image,
+                height,
+                weight,
+                positions,
+                dob,
+                overall_rating,
+                potential,
+                value,
+                wage,
+                profile_preferred_foot,
+                profile_weak_foot,
+                profile_skill_moves,
+                profile_international_reputation,
+                profile_work_rate,
+                profile_body_type,
+                profile_real_face,
+                profile_release_clause,
+                profile_id,
+                specialities,
+                club_id,
+                club_name,
+                club_logo,
+                club_rating,
+                club_position,
+                club_kit_number,
+                club_joined,
+                club_contract_valid_until,
+                country_id,
+                country_name,
+                country_logo,
+                country_rating,
+                country_position,
+                country_kit_number,
+                crossing,
+                finishing,
+                heading_accuracy,
+                short_passing,
+                volleys,
+                dribbling,
+                curve,
+                fk_accuracy,
+                long_passing,
+                ball_control,
+                acceleration,
+                sprint_speed,
+                agility,
+                reactions,
+                balance,
+                shot_power,
+                jumping,
+                stamina,
+                strength,
+                long_shots,
+                aggression,
+                interceptions,
+                positioning,
+                vision,
+                penalties,
+                composure,
+                defensive_awareness,
+                standing_tackle,
+                sliding_tackle,
+                gk_diving,
+                gk_handling,
+                gk_kicking,
+                gk_positioning,
+                gk_reflexes,
+                traits
+            } = playerDetails;
+
+            const detailsRow = `"${version}","${version_date}","${name}","${full_name}","${country_flag}","${description}","${image}","${height}","${weight}","${positions}","${dob}","${overall_rating}","${potential}","${value}","${wage}","${profile_preferred_foot}","${profile_weak_foot}","${profile_skill_moves}","${profile_international_reputation}","${profile_work_rate}","${profile_body_type}","${profile_real_face}","${profile_release_clause}","${profile_id}","${specialities}","${club_id}","${club_name}","${club_logo}","${club_rating}","${club_position}","${club_kit_number}","${club_joined}","${club_contract_valid_until}","${country_id}","${country_name}","${country_logo}","${country_rating}","${country_position}","${country_kit_number}","${crossing}","${finishing}","${heading_accuracy}","${short_passing}","${volleys}","${dribbling}","${curve}","${fk_accuracy}","${long_passing}","${ball_control}","${acceleration}","${sprint_speed}","${agility}","${reactions}","${balance}","${shot_power}","${jumping}","${stamina}","${strength}","${long_shots}","${aggression}","${interceptions}","${positioning}","${vision}","${penalties}","${composure}","${defensive_awareness}","${standing_tackle}","${sliding_tackle}","${gk_diving}","${gk_handling}","${gk_kicking}","${gk_positioning}","${gk_reflexes}","${traits}"`;
+            fs.appendFileSync(playersDataFilePath, detailsRow + '\n', {encoding: 'utf-8'});
+            bar.update(++count);
+        } catch (e) {
+            log.error(`failed to get playerId=${playerId}`);
+        }
+    }
+
+    bar.stop();
+};
+
+module.exports = {writePlayersData};
