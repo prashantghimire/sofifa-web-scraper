@@ -1,5 +1,5 @@
 ### FIFA 23 Players Data
-Collected from [sofifa.com](https://sofifa.com) as of March 19, 2023.
+Collected from [sofifa.com](https://sofifa.com) as of April 07, 2023.
 
 The output data are in the [output](./output) directory.
 
