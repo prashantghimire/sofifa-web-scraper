@@ -289,7 +289,7 @@ const getAllPlayerDetailById = async (playerId) => {
 
 const writePlayersData = async () => {
 
-    await loadAllPlayerIds({testScan: false}); // pass {testScan: true} for scanning few players
+    await loadAllPlayerIds({testScan: true}); // pass {testScan: true} for scanning few players
 
     let playerIdList = fs.readFileSync(playersIdsFilePath).toString().trim().split('\n');
     bar.start(playerIdList.length, 0);
