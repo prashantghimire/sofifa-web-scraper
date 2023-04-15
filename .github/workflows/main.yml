@@ -1,0 +1,16 @@
+name: NPM Script and Save Output
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: npm install
+    - name: Run NPM Script
+      run: npm run generate
+    - name: Create files
+      uses: actions/upload-artifact@v2
+      with:
+        name: output-files
+        path: output/*
