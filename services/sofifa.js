@@ -241,7 +241,7 @@ const getBasicInfo = (html) => {
     const name = title.substring(0, title.indexOf('FIFA ') - 1);
     const full_name = basic.find('.info h1').html();
     const short_name = header.find('h1.ellipsis').html();
-    const country_flag = basic.find().attr('data-src');
+    const country_flag = basic.find('div.meta.ellipsis img').attr('data-src');
     const image = basic.find('img[data-type="player"]').attr('data-src');
     const otherAttrs = basic.find('.info .meta').text().split(' ');
     const weight = parseInt(otherAttrs[otherAttrs.length - 1] || '0');
@@ -308,7 +308,7 @@ const writePlayersData = async (options) => {
 
     let count = 0;
     fs.writeFileSync(playersDataFilePath, '');
-    const line = `version,version_date,name,full_name,short_name,country_flag,description,image,height,weight,positions,dob,overall_rating,potential,value,wage,profile_preferred_foot,profile_weak_foot,profile_skill_moves,profile_international_reputation,profile_work_rate,profile_body_type,profile_real_face,profile_release_clause,profile_id,specialities,club_id,club_name,club_logo,club_rating,club_position,club_kit_number,club_joined,club_contract_valid_until,country_id,country_name,country_logo,country_rating,country_position,country_kit_number,crossing,finishing,heading_accuracy,short_passing,volleys,dribbling,curve,fk_accuracy,long_passing,ball_control,acceleration,sprint_speed,agility,reactions,balance,shot_power,jumping,stamina,strength,long_shots,aggression,interceptions,positioning,vision,penalties,composure,defensive_awareness,standing_tackle,sliding_tackle,gk_diving,gk_handling,gk_kicking,gk_positioning,gk_reflexes,traits`;
+    const line = `version,version_date,name,full_name,short_name,description,image,height,weight,positions,dob,overall_rating,potential,value,wage,profile_preferred_foot,profile_weak_foot,profile_skill_moves,profile_international_reputation,profile_work_rate,profile_body_type,profile_real_face,profile_release_clause,profile_id,specialities,club_id,club_name,club_logo,club_rating,club_position,club_kit_number,club_joined,club_contract_valid_until,country_id,country_name,country_flag,country_logo,country_rating,country_position,country_kit_number,crossing,finishing,heading_accuracy,short_passing,volleys,dribbling,curve,fk_accuracy,long_passing,ball_control,acceleration,sprint_speed,agility,reactions,balance,shot_power,jumping,stamina,strength,long_shots,aggression,interceptions,positioning,vision,penalties,composure,defensive_awareness,standing_tackle,sliding_tackle,gk_diving,gk_handling,gk_kicking,gk_positioning,gk_reflexes,traits`;
     fs.appendFileSync(playersDataFilePath, line + '\n', {encoding: 'utf-8'});
     for await (const playerId of playerIdList) {
         try {
@@ -319,7 +319,6 @@ const writePlayersData = async (options) => {
                 name,
                 full_name,
                 short_name,
-                country_flag,
                 description,
                 image,
                 height,
@@ -350,6 +349,7 @@ const writePlayersData = async (options) => {
                 club_contract_valid_until,
                 country_id,
                 country_name,
+                country_flag,
                 country_logo,
                 country_rating,
                 country_position,
@@ -391,7 +391,7 @@ const writePlayersData = async (options) => {
                 traits
             } = playerDetails;
 
-            const detailsRow = `"${version}","${version_date}","${name}","${full_name}","${short_name}",${country_flag}","${description}","${image}","${height}","${weight}","${positions}","${dob}","${overall_rating}","${potential}","${value}","${wage}","${profile_preferred_foot}","${profile_weak_foot}","${profile_skill_moves}","${profile_international_reputation}","${profile_work_rate}","${profile_body_type}","${profile_real_face}","${profile_release_clause}","${profile_id}","${specialities}","${club_id}","${club_name}","${club_logo}","${club_rating}","${club_position}","${club_kit_number}","${club_joined}","${club_contract_valid_until}","${country_id}","${country_name}","${country_logo}","${country_rating}","${country_position}","${country_kit_number}","${crossing}","${finishing}","${heading_accuracy}","${short_passing}","${volleys}","${dribbling}","${curve}","${fk_accuracy}","${long_passing}","${ball_control}","${acceleration}","${sprint_speed}","${agility}","${reactions}","${balance}","${shot_power}","${jumping}","${stamina}","${strength}","${long_shots}","${aggression}","${interceptions}","${positioning}","${vision}","${penalties}","${composure}","${defensive_awareness}","${standing_tackle}","${sliding_tackle}","${gk_diving}","${gk_handling}","${gk_kicking}","${gk_positioning}","${gk_reflexes}","${traits}"`;
+            const detailsRow = `"${version}","${version_date}","${name}","${full_name}","${short_name}","${description}","${image}","${height}","${weight}","${positions}","${dob}","${overall_rating}","${potential}","${value}","${wage}","${profile_preferred_foot}","${profile_weak_foot}","${profile_skill_moves}","${profile_international_reputation}","${profile_work_rate}","${profile_body_type}","${profile_real_face}","${profile_release_clause}","${profile_id}","${specialities}","${club_id}","${club_name}","${club_logo}","${club_rating}","${club_position}","${club_kit_number}","${club_joined}","${club_contract_valid_until}","${country_id || ''}","${country_name || ''}","${country_flag || ''}","${country_logo || ''}","${country_rating || ''}","${country_position || ''}","${country_kit_number || ''}","${crossing}","${finishing}","${heading_accuracy}","${short_passing}","${volleys}","${dribbling}","${curve}","${fk_accuracy}","${long_passing}","${ball_control}","${acceleration}","${sprint_speed}","${agility}","${reactions}","${balance}","${shot_power}","${jumping}","${stamina}","${strength}","${long_shots}","${aggression}","${interceptions}","${positioning}","${vision}","${penalties}","${composure}","${defensive_awareness}","${standing_tackle}","${sliding_tackle}","${gk_diving}","${gk_handling}","${gk_kicking}","${gk_positioning}","${gk_reflexes}","${traits || ''}"`;
             fs.appendFileSync(playersDataFilePath, detailsRow + '\n', {encoding: 'utf-8'});
             bar.update(++count);
         } catch (e) {
