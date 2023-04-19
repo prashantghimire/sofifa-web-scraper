@@ -11,13 +11,13 @@ Node (version `18.12.1`) and npm (version `9.3.1`) were used during development.
 
 ```
 git clone https://github.com/prashantghimire/sofifa-web-scraper
-cd sofifa.web-scraper
+cd sofifa-web-scraper
 npm i
 
-# to download top 60 players, useful for testing setup.
+# to download top 60 players(useful for testing setup).
 npm run download-test
 
-# to download all the 18k players)
+# to download all the 18k+ players (takes 2+ hours)
 npm run download-full
 ```
 
