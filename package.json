@@ -4,7 +4,7 @@
   "description": "Collected from [sofifa.com](https://sofifa.com) as of March 19, 2023.\r ### Sample Data",
   "main": "index.js",
   "scripts": {
-    "download-all": "node main.js --all",
+    "download-full": "node main.js --full",
     "download-test": "node main.js --test"
   },
   "repository": {

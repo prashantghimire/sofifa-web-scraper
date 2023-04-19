@@ -5,7 +5,7 @@ const {writePlayersData} = require('./services/sofifa');
     if (runArg === '--test') {
         console.log('downloading test players data.');
         await writePlayersData({testScan: true});
-    } else if (runArg === '--all') {
+    } else if (runArg === '--full') {
         console.log('downloading all players data.');
         await writePlayersData({testScan: false});
     }
