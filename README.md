@@ -1,8 +1,10 @@
 ### FIFA 23 Players Data
 
 Collected from [sofifa.com](https://sofifa.com) as of April 07, 2023.
+#### Check out the [demo data here](./output/player_data_test.csv).
 
-Latest players data can be obtained by running the project locally.
+Complete latest players data can be obtained by running the project locally. The full data is not guaranteed to be the latest since completing scraping takes about 2 hours. Due to Cloudflare restrictions, scraping is set to be slow on purpose.
+
 To do so, follow the instructions below:
 
 Node (version `18.12.1`) and npm (version `9.3.1`) were used during development.
