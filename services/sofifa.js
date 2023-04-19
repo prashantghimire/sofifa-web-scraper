@@ -8,8 +8,10 @@ const _ = require('lodash');
 const log = require('loglevel');
 
 const countries = JSON.parse(fs.readFileSync('./data/countries.json').toString());
-const playersIdsFilePath = './output/player_ids.csv';
-const playersDataFilePath = './output/player_data.csv';
+const playersIdsFilePathTest = './output/player_ids_test.csv';
+const playersIdsFilePathFull = './output/player_ids_full.csv';
+const playersDataFilePathTest = './output/player_data_test.csv';
+const playersDataFilePathFull = './output/player_data_full.csv';
 
 const cliProgress = require('cli-progress');
 const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
@@ -21,6 +23,7 @@ const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
  */
 const loadAllPlayerIds = async (options) => {
     options = options || {};
+    let playersIdsFilePath = options.testScan ? playersIdsFilePathTest: playersIdsFilePathFull;
     fs.writeFileSync(playersIdsFilePath, ``);
     let path = `/players?col=oa&sort=desc`;
     bar.start(options.testScan ? 1 : 310, 0); // approximately 310 pages on sofifa.
@@ -294,6 +297,9 @@ const getAllPlayerDetailById = async (playerId) => {
  * @returns {Promise<void>}
  */
 const writePlayersData = async (options) => {
+
+    let playersIdsFilePath = options.testScan ? playersIdsFilePathTest: playersIdsFilePathFull;
+    let playersDataFilePath = options.testScan ? playersDataFilePathTest : playersDataFilePathFull;
 
     await loadAllPlayerIds(options); // pass {testScan: true} for scanning few players
 
