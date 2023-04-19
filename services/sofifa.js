@@ -207,9 +207,9 @@ const extractData = (type, html) => {
             if (i === 0) {
                 country_other.country_rating = text.trim();
             } else if (text.startsWith(position)) {
-                country_other.country_position = text.replace(position, '');
+                country_other.country_position = text.trim().replace(position, '').toUpperCase();
             } else if (text.startsWith(kitNumber)) {
-                country_other.country_kit_number = text.replace(kitNumber, '');
+                country_other.country_kit_number = text.trim().replace(kitNumber, '');
             }
         });
 
