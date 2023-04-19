@@ -286,10 +286,14 @@ const getAllPlayerDetailById = async (playerId) => {
         console.log('error: ', e.message + ', player id = ' + playerId);
     }
 };
+/**
+ *
+ * @param options {{testScan: boolean}}
+ * @returns {Promise<void>}
+ */
+const writePlayersData = async (options) => {
 
-const writePlayersData = async () => {
-
-    await loadAllPlayerIds({testScan: true}); // pass {testScan: true} for scanning few players
+    await loadAllPlayerIds(options); // pass {testScan: true} for scanning few players
 
     let playerIdList = fs.readFileSync(playersIdsFilePath).toString().trim().split('\n');
     bar.start(playerIdList.length, 0);
