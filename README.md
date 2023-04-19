@@ -14,7 +14,7 @@ npm i
 npm run download-test
 
 # to download all the 18k players)
-npm run download-all
+npm run download-full
 ```
 
 The output data are in the [output](./output) directory.
