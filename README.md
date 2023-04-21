@@ -1,6 +1,6 @@
 ### FIFA 23 Players Data
 
-Collected from [sofifa.com](https://sofifa.com) as of April 07, 2023.
+Collected from [sofifa.com](https://sofifa.com).
 #### You can [download full players data here](./output/player_data_full.csv).
 Keep in mind that the full data won't always be up-to-date. 
 
