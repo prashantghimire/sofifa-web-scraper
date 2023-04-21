@@ -1,27 +1,27 @@
 ### FIFA 23 Players Data
 
 Collected from [sofifa.com](https://sofifa.com) as of April 07, 2023.
-#### Check out the [demo data here](./output/player_data_test.csv).
+#### You can [download full players data here](./output/player_data_full.csv).
+Keep in mind that the full data won't always be up-to-date. 
 
-Complete latest players data can be obtained by running the project locally. The full data is not guaranteed to be the latest since completing scraping takes about 2 hours. Due to Cloudflare restrictions, scraping is set to be slow on purpose.
+If you would like to download the latest data, you can do so by cloning the repo and running the script locally. 
+Be mindful that the task will take over 2 hours and its set be be intentionally slow to evade Cloudfare IP blocking.
 
-To do so, follow the instructions below:
-
+To run the project locally, follow the instructions below.
 Node (version `18.12.1`) and npm (version `9.3.1`) were used during development.
 
 ```
 git clone https://github.com/prashantghimire/sofifa-web-scraper
 cd sofifa-web-scraper
-npm i
+npm install
 
-# to download top 60 players(useful for testing setup).
+# to download top 60 players (useful for testing setup)
 npm run download-test
 
 # to download all the 18k+ players (takes 2+ hours)
 npm run download-full
 ```
 
-The output data are in the [output](./output) directory.
 
 #### Players Data
 
@@ -30,4 +30,4 @@ import pandas as pd
 pd.read_csv('./player_data.csv', index_col=['profile_id'])
 ```
 
-<img src="images/player_data.png" width="400px" alt="Basic"/>
+<img src="images/player_data.png"  alt="Basic"/>
