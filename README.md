@@ -1,8 +1,8 @@
 ### FIFA 23 Players Data
 
 Collected from [sofifa.com](https://sofifa.com).
-#### You can [download full players data here](./output/player_data_full.csv).
-Keep in mind that the full data won't always be up-to-date. 
+#### You can [view demo data](./output/player_data_test.csv) and [download full players data](./output/player_data_full.csv).
+Keep in mind that the full data won't always be up-to-date.
 
 If you would like to download the latest data, you can do so by cloning the repo and running the script locally. 
 Be mindful that the task will take over 2 hours and its set be be intentionally slow to evade Cloudfare IP blocking.
