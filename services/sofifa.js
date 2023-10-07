@@ -97,8 +97,8 @@ const getStatsBoxType = (text) => {
         return 'defending';
     } else if (text.startsWith('goalkeeping')) {
         return 'goalkeeping';
-    } else if (text.startsWith('traits')) {
-        return 'traits';
+    } else if (text.startsWith('playstyles')) {
+        return 'playstyles';
     } else {
         const isCountry = countryNames.some((c) => text.includes(c));
         if (isCountry) {
@@ -110,7 +110,7 @@ const getStatsBoxType = (text) => {
 
 const extractData = (type, html) => {
     const $ = cheerio.load(html);
-    const playerStats = ['attacking', 'skill', 'movement', 'power', 'mentality', 'defending', 'goalkeeping', 'traits'];
+    const playerStats = ['attacking', 'skill', 'movement', 'power', 'mentality', 'defending', 'goalkeeping', 'playstyles'];
     if (type === 'overall_rating') {
         return {overall_rating: $('div span').text()};
     } else if (type === 'potential') {
@@ -168,7 +168,8 @@ const extractData = (type, html) => {
     } else if (type === 'club') {
         const club_name = $('.card h5 a').text().trim();
         const club_logo = $('.card > img').attr('data-src');
-        const club_id = parseInt(club_logo.split('/')[4]);
+        const club_path = $('.card h5 a').attr('href')?.split('/')[2];
+        const club_id = parseInt(club_path) || '';
         const club_others = {};
         $('.card ul li').each((i, el) => {
             const text = $(el).text().toLowerCase();
@@ -214,11 +215,11 @@ const extractData = (type, html) => {
         });
 
         return {...country, ...country_other};
-    } else if (type === 'traits') {
-        let traits = $('.card ul li')
+    } else if (type === 'playstyles') {
+        let playStyles = $('.card ul li')
             .map((i, el) => $(el).find('span:first-child').text())
             .get().join(',');
-        return {traits};
+        return {playStyles};
     } else if (playerStats.includes(type)) {
         const stats = {};
         $('.card ul li').each((i, el) => {
@@ -238,7 +239,7 @@ const getBasicInfo = (html) => {
     const header = $('header');
     const title = $('title').text();
     const description = $('meta[name=description]').attr('content');
-    const name = title.substring(0, title.indexOf('FIFA ') - 1);
+    const name = title.substring(0, title.indexOf('FC 24') - 1);
     const full_name = basic.find('.info h1').html();
     const short_name = header.find('h1.ellipsis').html();
     const country_flag = basic.find('div.meta.ellipsis img').attr('data-src');
@@ -308,7 +309,7 @@ const writePlayersData = async (options) => {
 
     let count = 0;
     fs.writeFileSync(playersDataFilePath, '');
-    const line = `version,version_date,name,full_name,short_name,description,image,height,weight,positions,dob,overall_rating,potential,value,wage,profile_preferred_foot,profile_weak_foot,profile_skill_moves,profile_international_reputation,profile_work_rate,profile_body_type,profile_real_face,profile_release_clause,profile_id,specialities,club_id,club_name,club_logo,club_rating,club_position,club_kit_number,club_joined,club_contract_valid_until,country_id,country_name,country_flag,country_logo,country_rating,country_position,country_kit_number,crossing,finishing,heading_accuracy,short_passing,volleys,dribbling,curve,fk_accuracy,long_passing,ball_control,acceleration,sprint_speed,agility,reactions,balance,shot_power,jumping,stamina,strength,long_shots,aggression,interceptions,positioning,vision,penalties,composure,defensive_awareness,standing_tackle,sliding_tackle,gk_diving,gk_handling,gk_kicking,gk_positioning,gk_reflexes,traits`;
+    const line = `version,version_date,name,full_name,short_name,description,image,height,weight,positions,dob,overall_rating,potential,value,wage,profile_preferred_foot,profile_weak_foot,profile_skill_moves,profile_international_reputation,profile_work_rate,profile_body_type,profile_real_face,profile_release_clause,profile_id,specialities,club_id,club_name,club_logo,club_rating,club_position,club_kit_number,club_joined,club_contract_valid_until,country_id,country_name,country_flag,country_logo,country_rating,country_position,country_kit_number,crossing,finishing,heading_accuracy,short_passing,volleys,dribbling,curve,fk_accuracy,long_passing,ball_control,acceleration,sprint_speed,agility,reactions,balance,shot_power,jumping,stamina,strength,long_shots,aggression,interceptions,positioning,vision,penalties,composure,defensive_awareness,standing_tackle,sliding_tackle,gk_diving,gk_handling,gk_kicking,gk_positioning,gk_reflexes,play_styles`;
     fs.appendFileSync(playersDataFilePath, line + '\n', {encoding: 'utf-8'});
     for await (const playerId of playerIdList) {
         try {
@@ -388,10 +389,10 @@ const writePlayersData = async (options) => {
                 gk_kicking,
                 gk_positioning,
                 gk_reflexes,
-                traits
+                playStyles
             } = playerDetails;
 
-            const detailsRow = `"${version}","${version_date}","${name}","${full_name}","${short_name}","${description}","${image}","${height}","${weight}","${positions}","${dob}","${overall_rating}","${potential}","${value}","${wage}","${profile_preferred_foot}","${profile_weak_foot}","${profile_skill_moves}","${profile_international_reputation}","${profile_work_rate}","${profile_body_type}","${profile_real_face}","${profile_release_clause}","${profile_id}","${specialities}","${club_id}","${club_name}","${club_logo}","${club_rating}","${club_position}","${club_kit_number}","${club_joined}","${club_contract_valid_until}","${country_id || ''}","${country_name || ''}","${country_flag || ''}","${country_logo || ''}","${country_rating || ''}","${country_position || ''}","${country_kit_number || ''}","${crossing}","${finishing}","${heading_accuracy}","${short_passing}","${volleys}","${dribbling}","${curve}","${fk_accuracy}","${long_passing}","${ball_control}","${acceleration}","${sprint_speed}","${agility}","${reactions}","${balance}","${shot_power}","${jumping}","${stamina}","${strength}","${long_shots}","${aggression}","${interceptions}","${positioning}","${vision}","${penalties}","${composure}","${defensive_awareness}","${standing_tackle}","${sliding_tackle}","${gk_diving}","${gk_handling}","${gk_kicking}","${gk_positioning}","${gk_reflexes}","${traits || ''}"`;
+            const detailsRow = `"${version}","${version_date}","${name}","${full_name}","${short_name}","${description}","${image}","${height}","${weight}","${positions}","${dob}","${overall_rating}","${potential}","${value}","${wage}","${profile_preferred_foot}","${profile_weak_foot}","${profile_skill_moves}","${profile_international_reputation}","${profile_work_rate}","${profile_body_type}","${profile_real_face}","${profile_release_clause}","${profile_id}","${specialities}","${club_id}","${club_name}","${club_logo}","${club_rating}","${club_position}","${club_kit_number}","${club_joined}","${club_contract_valid_until}","${country_id || ''}","${country_name || ''}","${country_flag || ''}","${country_logo || ''}","${country_rating || ''}","${country_position || ''}","${country_kit_number || ''}","${crossing}","${finishing}","${heading_accuracy}","${short_passing}","${volleys}","${dribbling}","${curve}","${fk_accuracy}","${long_passing}","${ball_control}","${acceleration}","${sprint_speed}","${agility}","${reactions}","${balance}","${shot_power}","${jumping}","${stamina}","${strength}","${long_shots}","${aggression}","${interceptions}","${positioning}","${vision}","${penalties}","${composure}","${defensive_awareness}","${standing_tackle}","${sliding_tackle}","${gk_diving}","${gk_handling}","${gk_kicking}","${gk_positioning}","${gk_reflexes}","${playStyles || ''}"`;
             fs.appendFileSync(playersDataFilePath, detailsRow + '\n', {encoding: 'utf-8'});
             bar.update(++count);
         } catch (e) {
