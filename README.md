@@ -2,10 +2,10 @@
 
 Collected from [sofifa.com](https://sofifa.com).
 #### You can [view demo data](./output/player_data_test.csv) and [download full players data](./output/player_data_full.csv).
-Keep in mind that the full data won't always be up-to-date.
+Keep in mind that the above full players data won't always be up-to-date.
 
 If you would like to download the latest data, you can do so by cloning the repo and running the script locally. 
-Be mindful that the task will take over 2 hours and its set be be intentionally slow to evade Cloudfare IP blocking.
+Be mindful that the task will take over 2 hours and its intentionally set be be slow to evade Cloudfare IP blocking on sofifa.com.
 
 To run the project locally, follow the instructions below.
 Node (version `18.12.1`) and npm (version `9.3.1`) were used during development.
