@@ -1,4 +1,4 @@
-### FIFA 23 Players Data
+### EA FC 24 Players Data
 
 Collected from [sofifa.com](https://sofifa.com).
 #### You can [view demo data](./output/player_data_test.csv) and [download full players data](./output/player_data_full.csv).
