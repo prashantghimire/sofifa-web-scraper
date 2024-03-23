@@ -1,6 +1,7 @@
 const cheerio = require('cheerio');
 const Humanoid = require('humanoid-js');
 const humanoid = new Humanoid();
+const fs = require('fs');
 
 /**
  *
@@ -32,7 +33,8 @@ const readPage = async (url) => {
  * shot_power,jumping,stamina,strength,long_shots,
  * aggression,interceptions,positioning,vision,penalties,composure,
  * defensive_awareness,standing_tackle,sliding_tackle,
- * gk_diving,gk_handling,gk_kicking,gk_positioning,gk_reflexes,play_styles
+ * gk_diving,gk_handling,gk_kicking,gk_positioning,gk_reflexes
+ * play_styles
  */
 async function getPlayerDetailsRow(url) {
     const html = await readPage(url);
@@ -142,7 +144,7 @@ async function getPlayerDetailsRow(url) {
         return results;
     }
 
-    // country_id,country_name,country_league_id,country_league_name,country_flag,country_rating,country_position,country_kit_number,
+    // 6. country_id,country_name,country_league_id,country_league_name,country_flag,country_rating,country_position,country_kit_number,
     function getPlayerNationalTeam() {
         let results = ['', '', '', '', '', '', ''];
         const index = $(content_player_info).find('h5').map((i, el) => $(el).text().includes('National team')).get().indexOf(true);
@@ -174,6 +176,7 @@ async function getPlayerDetailsRow(url) {
     }
 
     function getPlayerAttributes() {
+        // 7. player_attributes
         const player_attr_grid1 = $(grids[2]).find('.col p').map((i, el) => $(el).text()).get();
         const player_attr_grid2 = $(grids[3]).find('.col p').map((i, el) => $(el).text()).get();
 
@@ -238,7 +241,7 @@ async function getPlayerDetailsRow(url) {
         if (index_play_styles >= 0) {
             play_styles_array = $($(grids[3]).find('.col')[index_play_styles]).find('p').map((i, el) => $(el).text()).get();
         }
-        const play_styles = play_styles_array.join(',')
+        const play_styles = play_styles_array.join(',');
         return [
             crossing,
             finishing,
@@ -312,11 +315,13 @@ async function getPlayerDetailsRow(url) {
     ];
 
     const row = line_array.join('|');
-    console.log(row);
+    return row;
 }
-
 
 (async function () {
     const row = await getPlayerDetailsRow('https://sofifa.com/player/231747/kylian-mbappe/240033/');
+    const row_header = `player_id|version|full_name|description|image|height|weight|dob|positions|overall_rating|potential|value|wage|preferred_foot|weak_foot|skill_moves|international_reputation|work_rate|body_type|real_face|release_clause|specialities|club_id|club_name|club_league_id|club_league_name|club_logo|club_rating|club_position|club_kit_number|club_joined|club_contract_valid_until|country_id|country_name|country_league_id|country_league_name|country_flag|country_rating|country_position|country_kit_number|crossing|finishing|heading_accuracy|short_passing|volleys|dribbling|curve|fk_accuracy|long_passing|ball_control|acceleration|sprint_speed|agility|reactions|balance|shot_power|jumping|stamina|strength|long_shots|aggression|interceptions|positioning|vision|penalties|composure|defensive_awareness|standing_tackle|sliding_tackle|gk_diving|gk_handling|gk_kicking|gk_positioning|gk_reflexes|play_styles\n`;
+    fs.writeFileSync('./test.csv', row_header);
+    fs.appendFileSync('./test.csv', row)
 })();
 
