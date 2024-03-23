@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "download-full": "node main.js --full",
-    "download-test": "node main.js --test"
+    "download-test": "node main.js --test",
+    "donwload": "node download.js"
   },
   "repository": {
     "type": "git",
