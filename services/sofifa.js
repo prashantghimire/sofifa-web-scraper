@@ -40,10 +40,10 @@ const loadAllPlayerIds = async (options) => {
             continue;
         }
         const $ = cheerio.load(html);
-        const playerListTable = $('div.card table.table.table-hover.persist-area tbody tr');
+        const playerListTable = $('main article table tbody tr');
         const players = playerListTable
             .map((i, el) => {
-                const link = $(el).find('td.col-name a').attr('href');
+                const link = $(el).find('td a').attr('href');
                 const parts = link.split('/');
                 return parts[2];
             })

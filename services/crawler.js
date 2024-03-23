@@ -1,22 +1,16 @@
-const axios = require('axios');
+const Humanoid = require('humanoid-js');
+const humanoid = new Humanoid();
+
 const readPage = async (url) => {
     try {
-        const config = {
-            headers: {
-                'User-Agent':
-                    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36',
-            },
-        };
-
-        const response = await axios.get(url, config);
-
-        if (response.status !== 200) {
+        const response = await humanoid.get(url);
+        if (response.statusCode !== 200) {
             console.log('Error occurred while fetching data');
             return;
         }
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             setTimeout(() => {
-                resolve(response.data);
+                resolve(response.body);
             }, 300);
         });
     } catch (err) {
