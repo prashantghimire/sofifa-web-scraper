@@ -75,7 +75,7 @@ async function getPlayerDetailsCsvRow(url) {
         results[1] = content_player_profile.find(s => s.includes('Weak foot'))?.replace(' Weak foot', '') || '';
         results[2] = content_player_profile.find(s => s.includes('Skill moves'))?.replace(' Skill moves', '') || '';
         results[3] = content_player_profile.find(s => s.includes('International reputation'))?.replace(' International reputation', '') || '';
-        results[4] = content_player_profile.find(s => s.includes('Work rate'))?.replace('Work rate ', '') || '';
+        results[4] = content_player_profile.find(s => s.includes('Work rate'))?.replace('Work rate ', '').replace(/\s/g, '') || '';
         results[5] = content_player_profile.find(s => s.includes('Body type'))?.replace('Body type ', '') || '';
         results[6] = content_player_profile.find(s => s.includes('Real face'))?.replace('Real face ', '') || '';
         results[7] = content_player_profile.find(s => s.includes('Release clause'))?.replace('Release clause ', '') || '';
@@ -119,7 +119,7 @@ async function getPlayerDetailsCsvRow(url) {
         const content_player_club_elements = $(content_player_info[index]).find('p').map((i, el) => $(el).text()).get();
         const club_position = content_player_club_elements.find(s => s.includes('Position'))?.replace('Position', '').trim() || '';
         const club_kit_number = content_player_club_elements.find(s => s.includes('Kit number'))?.replace('Kit number', '').trim() || '';
-        const club_joined = content_player_club_elements.find(s => s.includes('Joined'))?.replace('Joined', '').trim() || '';
+        const club_joined = formatDate(content_player_club_elements.find(s => s.includes('Joined'))?.replace('Joined', '').trim()) || '';
         const club_contract_valid_util = content_player_club_elements.find(s => s.includes('Contract valid until'))?.replace('Contract valid until', '').trim() || '';
         results = [club_id, club_name, club_league_id, club_league_name, club_logo, club_rating, club_position, club_kit_number, club_joined, club_contract_valid_util];
 
