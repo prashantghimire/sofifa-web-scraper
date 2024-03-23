@@ -24,8 +24,8 @@ const readPage = async (url) => {
  * overall_rating,potential,value,wage,
  * preferred_foot,weak_foot,skill_moves,international_reputation,work_rate,body_type,real_face,release_clause,
  * specialities
- * club_id,club_name,club_logo,club_rating,club_position,club_kit_number,club_joined,club_contract_valid_until,
- * country_id,country_name,country_flag,country_logo,country_rating,country_position,country_kit_number,
+ * club_id,club_name,club_league_id,club_league_name,club_logo,club_rating,club_position,club_kit_number,club_joined,club_contract_valid_until,
+ * country_id,country_name,country_league_id,country_league_name,country_flag,country_rating,country_position,country_kit_number,
  * crossing,finishing,heading_accuracy,short_passing,volleys,
  * dribbling,curve,fk_accuracy,long_passing,ball_control,
  * acceleration,sprint_speed,agility,reactions,balance,
@@ -109,7 +109,7 @@ async function getPlayerDetailsRow(url) {
         return content_player_specialities.map(s => s.replace('#', '')).join(',');
     }
 
-    // 5. club_id,club_name,club_logo,club_rating,club_position,club_kit_number,club_joined,club_contract_valid_until,
+    // 5. club_id,club_name,league_id, league_name, club_logo,club_rating,club_position,club_kit_number,club_joined,club_contract_valid_until,
     function getPlayerClub() {
         let results = ['', '', '', '', '', '', '', ''];
         const index = $(content_player_info).find('h5').map((i, el) => $(el).text().includes('Club')).get().indexOf(true);
@@ -124,10 +124,10 @@ async function getPlayerDetailsRow(url) {
         const club_name = $(club_elem).text().trim() || '';
         const club_logo = $(club_elem).find('img').attr('data-src') || '';
 
-        const league_elem = content_player_club_html.find(e => e.includes('/league/'));
-        const league_href = $(league_elem).attr('href');
-        const league_id = league_href.split('/')[2];
-        const league_name = $(league_elem).text().trim() || '';
+        const club_league_elem = content_player_club_html.find(e => e.includes('/league/'));
+        const club_league_href = $(club_league_elem).attr('href');
+        const club_league_id = club_league_href.split('/')[2];
+        const club_league_name = $(club_league_elem).text().trim() || '';
 
         const club_rating_elem = content_player_club_html.find(e => e.includes('<svg viewBox'));
         const club_rating = $(club_rating_elem).text().trim() || '';
@@ -137,15 +137,40 @@ async function getPlayerDetailsRow(url) {
         const club_kit_number = content_player_club_elements.find(s => s.includes('Kit number')).replace('Kit number', '').trim() || '';
         const club_joined = content_player_club_elements.find(s => s.includes('Joined')).replace('Joined', '').trim() || '';
         const club_contract_valid_util = content_player_club_elements.find(s => s.includes('Contract valid until')).replace('Contract valid until', '').trim() || '';
-        results = [club_id, club_name, club_logo, club_rating, club_position, club_kit_number, club_joined, club_contract_valid_util];
+        results = [club_id, club_name, club_league_id, club_league_name, club_logo, club_rating, club_position, club_kit_number, club_joined, club_contract_valid_util];
+
         return results;
     }
 
+    // country_id,country_name,country_league_id,country_league_name,country_flag,country_rating,country_position,country_kit_number,
     function getPlayerNationalTeam() {
-        const content_player_national_team = $(content_player_info[3]).find('p').map((i, el) => $(el).text()).get();
-        const results = [];
+        let results = ['', '', '', '', '', '', ''];
+        const index = $(content_player_info).find('h5').map((i, el) => $(el).text().includes('National team')).get().indexOf(true);
+        if (index < 0) {
+            return results;
+        }
+        const content_player_national_team = $(content_player_info[index]).find('p').map((i, el) => $(el).html()).get();
 
-        return undefined;
+        const country_elem = content_player_national_team.find(e => e.includes('/team/'));
+        const country_href = $(country_elem).attr('href');
+        const country_id = country_elem.split('/')[2] || '';
+        const country_name = $(country_elem).text().trim() || '';
+        const country_flag = $(country_elem).find('img').attr('data-src') || '';
+
+        const country_league_elem = content_player_national_team.find(e => e.includes('/league/'));
+        const country_league_href = $(country_league_elem).attr('href');
+        const country_league_id = country_league_href.split('/')[2];
+        const country_league_name = $(country_league_elem).text().trim() || '';
+
+        const country_rating_elem = content_player_national_team.find(e => e.includes('<svg viewBox'));
+        const country_rating = $(country_rating_elem).text().trim() || '';
+        
+        const content_player_country_elements = $(content_player_info[index]).find('p').map((i, el) => $(el).text()).get();
+        const country_position = content_player_country_elements.find(s => s.includes('Position')).replace('Position', '').trim() || '';
+        const country_kit_number = content_player_country_elements.find(s => s.includes('Kit number')).replace('Kit number', '').trim() || '';
+        results = [country_id, country_name, country_league_id, country_league_name, country_flag, country_rating, country_position, country_kit_number];
+
+        return results;
     }
 
     const player_profile_attrs = getPlayerProfileAttrs();
