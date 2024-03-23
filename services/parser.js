@@ -3,7 +3,7 @@ const {getPageContent} = require('./scraper');
 const {formatDate} = require('./utils');
 
 /** scans in following order.
- * 1. player_id,version,full_name,description,image,height_cm,weight_kg,dob,positions,
+ * 1. player_id,version,name,full_name,description,image,height_cm,weight_kg,dob,positions,
  * 2. overall_rating,potential,value,wage,
  * 3. preferred_foot,weak_foot,skill_moves,international_reputation,work_rate,body_type,real_face,release_clause,
  * 4. specialities
@@ -29,8 +29,9 @@ async function getPlayerDetailsCsvRow(url) {
     const content = $('body main article');
 
     // 1. profile content
-    // player_id,version,full_name,description,image,height_cm,weight_kg,dob,positions,
+    // player_id,version,name,full_name,description,image,height_cm,weight_kg,dob,positions,
     const content_profile = content.find('.profile');
+    const name = $('title').text().split(' FC ')[0] || '';
     const full_name = content_profile.find('h1').text();
     const image = content_profile.find('img').attr('data-src');
 
@@ -292,6 +293,7 @@ async function getPlayerDetailsCsvRow(url) {
     const line_array = [
         player_id,
         version,
+        name,
         full_name,
         description,
         image,
