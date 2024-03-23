@@ -7,7 +7,6 @@ const humanoid = new Humanoid();
  * @returns {Promise<String>}
  */
 const getPageContent = async (url) => {
-    // console.log('scraping url=' + url)
     const response = await humanoid.get(url);
     if (response.statusCode !== 200) {
         throw new Error(`Error reading page=${url}, statusCode=${response.statusCode}`);
