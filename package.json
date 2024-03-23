@@ -6,7 +6,7 @@
   "scripts": {
     "download-full": "node main.js --full",
     "download-test": "node main.js --test",
-    "donwload": "node download.js"
+    "donwload": "node services/download.js"
   },
   "repository": {
     "type": "git",

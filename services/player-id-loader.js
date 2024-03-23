@@ -5,7 +5,6 @@ const fs = require('fs');
 const SOFIFA_BASE_URL = 'https://sofifa.com';
 const PLAYER_IDS_FILENAME = './player-ids.csv';
 const PLAYER_IDS_SOFIFA_URL = `https://sofifa.com/players?col=oa&sort=desc&offset=`;
-// const PLAYER_IDS_SOFIFA_URL = 'https://sofifa.com/players?col=oa&sort=desc';
 
 async function loadIds() {
     fs.writeFileSync(PLAYER_IDS_FILENAME, '');
