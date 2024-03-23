@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/prashantghimire/fifa-players-data#readme",
   "dependencies": {
+    "@types/cheerio": "^0.22.35",
     "axios": "^1.3.5",
     "cheerio": "^1.0.0-rc.12",
     "date-format": "^4.0.14",

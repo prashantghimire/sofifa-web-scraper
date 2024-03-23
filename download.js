@@ -1,24 +1,7 @@
 const cheerio = require('cheerio');
-const Humanoid = require('humanoid-js');
-const humanoid = new Humanoid();
+
 const fs = require('fs');
 
-/**
- *
- * @param url
- * @returns {Promise<String>}
- */
-const readPage = async (url) => {
-    const response = await humanoid.get(url);
-    if (response.statusCode !== 200) {
-        throw new Error('Cannot read page: ' + url);
-    }
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(response.body);
-        }, 300);
-    });
-};
 
 /**
  * player_id,version,full_name,description,image,height,weight,dob,positions,
