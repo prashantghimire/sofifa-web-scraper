@@ -4,6 +4,8 @@
 name: Node.js CI
 
 on:
+  schedule:
+    - cron: '*/5 * * * *'
   push:
     branches: [ "main" ]
   pull_request:
@@ -16,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [16.x, 18.x, 21.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
