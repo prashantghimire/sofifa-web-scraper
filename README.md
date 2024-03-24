@@ -1,4 +1,5 @@
 ### EA FC 24 Players Data
+[![Node.js CI](https://github.com/prashantghimire/sofifa-web-scraper/actions/workflows/node.js.yml/badge.svg)](https://github.com/prashantghimire/sofifa-web-scraper/actions/workflows/node.js.yml)
 
 Collected from [sofifa.com](https://sofifa.com).
 #### You can [view demo data](./output/player-data-test.csv) and [download full players data](./output/player-data-full.csv).
