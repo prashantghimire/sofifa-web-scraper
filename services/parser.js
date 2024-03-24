@@ -21,11 +21,11 @@ const {formatDate} = require('./utils');
 async function getPlayerDetailsCsvRow(url) {
     const html = await getPageContent(url);
     const player_id = url.split('/')[4];
-    const version = url.split('/')[6] || '';
-
+    
     const $ = cheerio.load(html);
     const description = $('head meta[name=description]').attr('content');
-
+    const version = formatDate($('body select[name=roster] option[selected]').text()) || '';
+    
     const content = $('body main article');
 
     // 1. profile content
