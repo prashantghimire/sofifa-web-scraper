@@ -21,7 +21,7 @@ const {formatDate} = require('./utils');
 async function getPlayerDetailsCsvRow(url) {
     const html = await getPageContent(url);
     const player_id = url.split('/')[4];
-    const version = url.split('/')[6];
+    const version = url.split('/')[6] || '';
 
     const $ = cheerio.load(html);
     const description = $('head meta[name=description]').attr('content');
@@ -310,7 +310,12 @@ async function getPlayerDetailsCsvRow(url) {
         ...player_club,
         ...player_national_team,
         ...player_attributes
-    ];
+    ].map((col) => {
+        if (col && col.includes('"')){
+            return col.replace(/"/g, '""');
+        }
+        return col;
+    });
 
     return '"' + line_array.join('","') + '"';
 }
