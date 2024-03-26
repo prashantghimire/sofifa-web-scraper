@@ -3,7 +3,7 @@ const cheerio = require('cheerio');
 const fs = require('fs');
 
 const SOFIFA_BASE_URL = 'https://sofifa.com';
-const PLAYER_IDS_FILENAME = './player-ids.csv';
+const PLAYER_IDS_FILENAME = './files/player-urls-full.csv';
 const PLAYER_IDS_SOFIFA_URL = `https://sofifa.com/players?col=oa&sort=desc&offset=`;
 
 /**
@@ -28,6 +28,7 @@ async function loadPlayerUrlsFile() {
             break;
         }
         currentOffset += 60;
+        console.log(`downloaded player urls count=${currentOffset}`);
     }
 }
 
