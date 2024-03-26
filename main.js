@@ -1,5 +1,6 @@
 const fs = require('fs');
 const {getPlayerDetailsCsvRow} = require('./services/parser');
+const {loadPlayerUrlsFile} = require('./services/player-urls-loader');
 
 const playerUrlsFullFile = './files/player-urls-full.csv';
 const playerUrlsTestFile = './files/player-urls-test.csv';
@@ -26,16 +27,14 @@ async function download(fileToRead, fileToWrite) {
 }
 
 (async function start() {
-    const isFullScan = scanType === 'full';
-    
-    if (isFullScan){
-        console.log('running full scan.')
-    } else {
-        console.log('running test scan.')
+    if (scanType === 'full') {
+        console.log('running full scan.');
+        await download(playerUrlsFullFile, playerDataFullFile);
+    } else if (scanType === 'test') {
+        console.log('running test scan.');
+        await download(playerUrlsTestFile, playerDataTestFile);
+    } else if (scanType === 'download-urls') {
+        console.log('starting to download latest player urls...');
+        await loadPlayerUrlsFile();
     }
-
-    let fileToRead = isFullScan ? playerUrlsFullFile : playerUrlsTestFile;
-    let fileToWrite = isFullScan ? playerDataFullFile : playerDataTestFile;
-
-    await download(fileToRead, fileToWrite);
 }());
