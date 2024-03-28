@@ -32,7 +32,7 @@ async function loadPlayerUrlsFile(scanType = 'full') {
         currentOffset += 60;
         console.log(`downloaded player urls count=${currentOffset}`);
         if (scanType === 'test') {
-            console.log('completed test scan.');
+            console.log('completed test urls load.');
             break;
         }
     }
