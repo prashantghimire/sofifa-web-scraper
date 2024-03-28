@@ -35,6 +35,9 @@ async function download(fileToRead, fileToWrite) {
         await download(playerUrlsTestFile, playerDataTestFile);
     } else if (scanType === 'download-urls') {
         console.log('starting to download latest player urls...');
-        await loadPlayerUrlsFile();
+        await loadPlayerUrlsFile('full');
+    } else if (scanType === 'download-urls-test') {
+        console.log('starting to download latest player urls...');
+        await loadPlayerUrlsFile('test');
     }
 }());
