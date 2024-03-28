@@ -1,6 +1,7 @@
 const fs = require('fs');
 const {getPlayerDetailsCsvRow} = require('./services/parser');
 const {loadPlayerUrlsFile} = require('./services/player-urls-loader');
+const assert = require('assert');
 
 const playerUrlsFullFile = './files/player-urls-full.csv';
 const playerUrlsTestFile = './files/player-urls-test.csv';
@@ -33,6 +34,10 @@ async function download(fileToRead, fileToWrite) {
     } else if (scanType === 'test') {
         console.log('running test scan.');
         await download(playerUrlsTestFile, playerDataTestFile);
+        const content = fs.readFileSync(playerDataTestFile).toString();
+        assert(content.includes('2000-07-21'), 'Haaland Birthday not present.');
+        assert(content.includes('1998-12-20'), 'Mbappe Birthday not present.');
+        console.log('all tests pass ✅');
     } else if (scanType === 'download-urls') {
         console.log('starting to download latest player urls...');
         await loadPlayerUrlsFile('full');
