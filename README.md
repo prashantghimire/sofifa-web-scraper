@@ -20,6 +20,7 @@ npm install
 npm run test
 
 # to download all the 18k+ players (takes ~2.5 hours)
+npm run download-urls
 npm run full
 ```
 
