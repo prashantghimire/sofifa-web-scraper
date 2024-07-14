@@ -2,7 +2,7 @@
 [![Node.js CI](https://github.com/prashantghimire/sofifa-web-scraper/actions/workflows/node.js.yml/badge.svg)](https://github.com/prashantghimire/sofifa-web-scraper/actions/workflows/node.js.yml)
 
 Collected from [sofifa.com](https://sofifa.com).
-#### You can [view demo data](./output/player-data-test.csv) and [download full players data](./output/player-data-full.csv).
+#### You can [view demo data](./output/player-data-test.csv) and [download full players data](./output/player-data-full.csv) (Last Scan: 2024-07-08).
 Keep in mind that the above full players data won't always be up-to-date.
 
 If you would like to download the latest data, you can do so by cloning the repo and running the script locally. 
