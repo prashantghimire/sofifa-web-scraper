@@ -1,4 +1,4 @@
-### EA FC 24 Players Data
+### EA FC 25 Players Data
 [![Node.js CI](https://github.com/prashantghimire/sofifa-web-scraper/actions/workflows/node.js.yml/badge.svg)](https://github.com/prashantghimire/sofifa-web-scraper/actions/workflows/node.js.yml)
 
 Collected from [sofifa.com](https://sofifa.com).
