@@ -13,9 +13,13 @@ const getPageContent = async (url) => {
     while (attempts > 0) {
         const response = await humanoid.get(url);
         if (response.statusCode !== 200) {
+            console.log(`retrying ... attempt=${attempts}`)
             await asyncWait(1000);
             attempts -= 1;
         } else {
+            if (attempts < 5) {
+                console.log(`retry successful ... attempt=${attempts}`)
+            }
             attempts = 5;
             await asyncWait(300);
             return response.body;
