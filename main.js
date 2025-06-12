@@ -1,48 +1,75 @@
 const fs = require('fs');
-const {getPlayerDetailsCsvRow} = require('./services/parser');
-const {loadPlayerUrlsFile} = require('./services/player-urls-loader');
-const assert = require('assert');
+const { createObjectCsvWriter } = require('csv-writer');
+const puppeteer = require('puppeteer');
+const { getPlayerData } = require('./scraper/player-data-scraper');
+const { getPlayerUrls } = require('./scraper/player-url-scraper');
+const { delay } = require('./utils');
 
-const playerUrlsFullFile = './files/player-urls-full.csv';
-const playerUrlsTestFile = './files/player-urls-test.csv';
+const main = async (arg) => {
+  const browser = await puppeteer.launch();
+  try {
+    const mode = arg || 'test';
+    console.log(`[INFO] Running in ${mode} mode`);
 
-const playerDataFullFile = './output/player-data-full.csv';
-const playerDataTestFile = './output/player-data-test.csv';
+    const urlFilePath = `./output/player-urls-${mode}.json`;
+    const dataFilePath = `./output/player-data-${mode}.csv`;
 
-const scanType = process.argv[2];
-
-const row_header = `"player_id","version","name","full_name","description","image","height_cm","weight_kg","dob","positions","overall_rating","potential","value","wage","preferred_foot","weak_foot","skill_moves","international_reputation","work_rate","body_type","real_face","release_clause","specialities","club_id","club_name","club_league_id","club_league_name","club_logo","club_rating","club_position","club_kit_number","club_joined","club_contract_valid_until","country_id","country_name","country_league_id","country_league_name","country_flag","country_rating","country_position","country_kit_number","crossing","finishing","heading_accuracy","short_passing","volleys","dribbling","curve","fk_accuracy","long_passing","ball_control","acceleration","sprint_speed","agility","reactions","balance","shot_power","jumping","stamina","strength","long_shots","aggression","interceptions","positioning","vision","penalties","composure","defensive_awareness","standing_tackle","sliding_tackle","gk_diving","gk_handling","gk_kicking","gk_positioning","gk_reflexes","play_styles"\n`;
-
-async function download(fileToRead, fileToWrite) {
-    const playerUrlList = fs.readFileSync(fileToRead).toString().trim().split('\n');
-    fs.writeFileSync(fileToWrite, row_header, {flag: 'w'});
-
-    let count = 0;
-    console.time('scan complete');
-    for (let url of playerUrlList) {
-        let row = await getPlayerDetailsCsvRow(url);
-        fs.writeFileSync(fileToWrite, row + '\n', {flag: 'a'});
-        console.log((++count) + '-' + url);
+    if (mode === 'download-urls') {
+      const urls = await getPlayerUrls(browser);
+      fs.writeFileSync(
+        './output/player-urls-full.json',
+        JSON.stringify(urls, null, 2)
+      );
+      fs.writeFileSync(
+        './output/player-urls-test.json',
+        JSON.stringify(urls.slice(0, 60), null, 2)
+      );
+      return;
     }
-    console.timeEnd('scan complete');
-}
 
-(async function start() {
-    if (scanType === 'full') {
-        console.log('running full scan.');
-        await download(playerUrlsFullFile, playerDataFullFile);
-    } else if (scanType === 'test') {
-        console.log('running test scan.');
-        await download(playerUrlsTestFile, playerDataTestFile);
-        const content = fs.readFileSync(playerDataTestFile).toString();
-        assert(content.includes('2000-07-21'), 'Haaland Birthday not present.');
-        assert(content.includes('1998-12-20'), 'Mbappe Birthday not present.');
-        console.log('all tests pass ✅');
-    } else if (scanType === 'download-urls') {
-        console.log('starting to download latest player urls...');
-        await loadPlayerUrlsFile('full');
-    } else if (scanType === 'download-urls-test') {
-        console.log('starting to download latest player urls...');
-        await loadPlayerUrlsFile('test');
+    const csvWriter = createObjectCsvWriter({
+      path: dataFilePath,
+      header: [
+        { id: 'id', title: 'ID' },
+        { id: 'long_name', title: 'Name' },
+        { id: 'player_positions', title: 'Position' },
+        { id: 'overall', title: 'Overall' },
+        { id: 'potential', title: 'Potential' },
+        { id: 'value_eur', title: 'Value(EUR)' },
+        { id: 'wage_eur', title: 'Wage(EUR)' },
+        { id: 'age', title: 'Age' },
+        { id: 'height_cm', title: 'Height(cm)' },
+        { id: 'weight_kg', title: 'Weight(kg)' },
+        { id: 'club_name', title: 'Club' },
+        { id: 'nationality_name', title: 'Nationality' },
+      ],
+    });
+
+    let urls = JSON.parse(fs.readFileSync(urlFilePath, 'utf-8'));
+
+    // --- MODIFICATION START ---
+    // If we are in 'full' mode, we will only process the first 500 URLs.
+    if (mode === 'full') {
+      urls = urls.slice(0, 500);
+      console.log(
+        `[INFO] MODIFIED: Starting scrape for the first ${urls.length} players.`
+      );
     }
-}());
+    // --- MODIFICATION END ---
+
+    for (const url of urls) {
+      const playerData = await getPlayerData(browser, url);
+      if (playerData) {
+        csvWriter.writeRecords([playerData]);
+        console.log(`[OK] ${playerData.long_name}`);
+      }
+      await delay(300);
+    }
+  } catch (err) {
+    console.log(err);
+  } finally {
+    await browser.close();
+  }
+};
+
+main(process.argv[2]);
