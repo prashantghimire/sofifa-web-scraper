@@ -28,7 +28,7 @@ A comprehensive Playwright-based web scraper that extracts player URLs and detai
 ## Project Structure
 
 ```
-google-scanner/
+sofifa-web-scraper/
 ├── src/                          # Source code
 │   ├── scrape_player_urls.py    # URL collector
 │   ├── player_scraper.py        # Modular scraper class
