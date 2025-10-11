@@ -91,7 +91,7 @@ All CSV headers use **lowercase_snake_case** format with no spaces for consisten
 
 1. **Install Python dependencies:**
    ```bash
-   pip install -r requirements.txt
+   pip3 install -r requirements.txt
    ```
 
 2. **Install Playwright browsers:**
