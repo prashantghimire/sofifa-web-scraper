@@ -4,6 +4,8 @@
 
 A comprehensive Playwright-based web scraper that extracts player URLs and detailed statistics from [sofifa.com](https://sofifa.com/) and saves them to CSV files.
 
+<img src="cover.png" alt="Cover Image">
+
 ## Quickstart
 
 - **Install dependencies**
