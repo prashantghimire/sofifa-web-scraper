@@ -8,7 +8,7 @@ A comprehensive Playwright-based web scraper that extracts player URLs and detai
 
 - **Install dependencies**
   ```bash
-  pip install -r requirements.txt
+  pip3 install -r requirements.txt
   playwright install chromium
   ```
 - **Validate the scraper**
