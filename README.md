@@ -1,4 +1,4 @@
-### Notice 📣 : This library has been migrated from Puppeteer (JavaScript) to Playwright (Python). This change has proven to be more effective against Cloudflare bot protections implemented by SoFIFA.
+### Notice 📣 : Works with EA FC 25 🚀! This library has been migrated from Puppeteer (JavaScript) to Playwright (Python). This change has proven to be more effective against Cloudflare bot protections implemented by SoFIFA.
 *Puppeteer code is kept in the `legacy` branch.*
 # SoFIFA Player Scraper
 
