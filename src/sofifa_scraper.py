@@ -16,6 +16,7 @@ class SoFIFAScraper:
         self.player_urls = []
         self.player_stats = []
         self.columns = None
+        self.csv_initialized = False
 
     def load_player_urls(self):
         """Load player URLs from CSV file"""
@@ -147,14 +148,19 @@ class SoFIFAScraper:
         import os
         
         # Check if file exists
-        file_exists = os.path.isfile(self.output_file)
+        file_exists = os.path.isfile(self.output_file) and self.csv_initialized
         
         # Initialize columns on first write
         if self.columns is None:
             self.columns = self._get_column_order(stats)
         
         # Write to CSV
-        with open(self.output_file, 'a', newline='', encoding='utf-8') as f:
+        mode = 'a'
+        if not self.csv_initialized:
+            mode = 'w'
+            self.csv_initialized = True
+
+        with open(self.output_file, mode, newline='', encoding='utf-8') as f:
             writer = csv.DictWriter(f, fieldnames=self.columns)
             
             # Write header only if file doesn't exist
