@@ -1,4 +1,5 @@
-### 🚨 **Note:** This library has been migrated from Puppeteer (JavaScript) to Playwright (Python). This change has proven to be more effective against Cloudflare bot protections implemented by SoFIFA. 🚨
+### Notice 📣 : This library has been migrated from Puppeteer (JavaScript) to Playwright (Python). This change has proven to be more effective against Cloudflare bot protections implemented by SoFIFA.
+*Puppeteer code is kept in the `legacy` branch.*
 # SoFIFA Player Scraper
 
 A comprehensive Playwright-based web scraper that extracts player URLs and detailed statistics from [sofifa.com](https://sofifa.com/) and saves them to CSV files.
