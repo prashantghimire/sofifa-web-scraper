@@ -10,9 +10,10 @@ from player_scraper import PlayerScraper
 
 
 class SoFIFAScraper:
-    def __init__(self, player_urls_file="player_urls.csv", output_file="player_stats.csv"):
+    def __init__(self, player_urls_file="player_urls.csv", output_file="player_stats.csv", skipped_player_file="player_skipped.csv"):
         self.player_urls_file = player_urls_file
         self.output_file = output_file
+        self.skipped_player_file = skipped_player_file
         self.player_urls = []
         self.player_stats = []
         self.columns = None
@@ -61,6 +62,10 @@ class SoFIFAScraper:
             # Block images, stylesheets, fonts to optimize loading
             await page.route("**/*", lambda route: route.abort() if route.request.resource_type in ["image", "stylesheet", "font", "media"] else route.continue_())
             
+            # Initialize skipped player file with header
+            with open(self.skipped_player_file, 'w', newline='', encoding='utf-8') as f:
+                csv.writer(f).writerow(['player_url'])
+
             urls_to_scrape = self.player_urls[:max_players] if max_players else self.player_urls
             total = len(urls_to_scrape)
             
@@ -106,8 +111,14 @@ class SoFIFAScraper:
                 
                 if not success:
                     print(f"  ✗ Failed after {max_retries} retries, skipping...")
+                    self.save_skipped_player_to_csv(url)
             
             await browser.close()
+
+    def save_skipped_player_to_csv(self, url):
+        """Save a skipped player URL to the skipped CSV file"""
+        with open(self.skipped_player_file, 'a', newline='', encoding='utf-8') as f:
+            csv.writer(f).writerow([url])
 
     def _get_column_order(self, stats_dict):
         """Define and return the column order for CSV"""
@@ -189,6 +200,11 @@ def parse_args():
         default="player_stats.csv",
         help="Path to the CSV file for saving player stats"
     )
+    parser.add_argument(
+        "--skipped-player-file",
+        default="player_skipped.csv",
+        help="Path to the CSV file for saving skipped player"
+    )
     return parser.parse_args()
 
 
@@ -197,7 +213,8 @@ async def main():
     args = parse_args()
     scraper = SoFIFAScraper(
         player_urls_file=args.player_urls_file,
-        output_file=args.output_file
+        output_file=args.output_file,
+        skipped_player_file=args.skipped_player_file,
     )
     
     # Load player URLs from CSV file
@@ -224,10 +241,15 @@ async def main():
     print("\n" + "="*60)
     print("SCRAPING COMPLETED!")
     print("="*60)
+    skipped_count = len(scraper.player_urls) - len(scraper.player_stats)
+    if args.max_players:
+        skipped_count = args.max_players - len(scraper.player_stats)
     print(f"Total player URLs loaded: {len(scraper.player_urls)}")
     print(f"Total player stats scraped: {len(scraper.player_stats)}")
-    print("\nFile created:")
-    print("  - player_stats.csv (detailed stats for all players)")
+    print(f"Total player skipped: {skipped_count}")
+    print("\nFiles created:")
+    print(f"  - {args.output_file} (detailed stats for all players)")
+    print(f"  - {args.skipped_player_file} (skipped player URLs)")
     
     # Show sample of stats columns
     if scraper.player_stats:
